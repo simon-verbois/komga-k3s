@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: komga-ingress
+  namespace: komga
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls.certresolver: your-certresolver-name
+spec:
+  rules:
+  - host: "komga.your-domain.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: komga-service
+            port:
+              name: http
+  tls:
+  - hosts:
+    - "komga.your-domain.com"

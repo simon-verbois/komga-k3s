@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: komga-configmap
+  namespace: komga
+data:
+  TZ: "Europe/Paris"
+  JAVA_TOOL_OPTIONS: "-Xmx4g"

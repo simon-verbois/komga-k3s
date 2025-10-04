@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: komga-deployment
+  namespace: komga
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: komga
+  template:
+    metadata:
+      labels:
+        app: komga
+    spec:
+      securityContext:
+        runAsUser: 1003 
+        runAsGroup: 1003
+        fsGroup: 1003
+      containers:
+      - name: app
+        image: gotson/komga:latest
+        envFrom:
+        - configMapRef:
+            name: komga-configmap
+        ports:
+        - containerPort: 25600
+          name: http
+        volumeMounts:
+        - name: komga-config
+          mountPath: /config
+        - name: komga-data
+          mountPath: /data
+        - name: mangas
+          mountPath: /manga
+
+      volumes:
+      - name: mangas
+        hostPath:
+          path: /data/md0/media/mangas
+          type: Directory
+      - name: komga-config
+        persistentVolumeClaim:
+          claimName: komga-config-pvc
+      - name: komga-data
+        persistentVolumeClaim:
+          claimName: komga-data-pvc
