@@ -129,6 +129,14 @@ You can monitor the progress of the update with:
 kubectl rollout status deployment/komga-deployment -n komga
 ```
 
+## Uninstallation
+
+To remove all the resources created by these manifests, run the following command:
+
+```bash
+kubectl delete -f .
+```
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
