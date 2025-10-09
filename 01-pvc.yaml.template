@@ -5,11 +5,10 @@ metadata:
   name: komga-config-pvc
   namespace: komga
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi 
+  storageClassName: hostpath-sc # <-- Add your own storage class or remove the line
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -17,8 +16,7 @@ metadata:
   name: komga-data-pvc
   namespace: komga
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
+  storageClassName: hostpath-sc # <-- Add your own storage class or remove the line
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }
+

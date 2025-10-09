@@ -5,5 +5,5 @@ metadata:
   name: komga-configmap
   namespace: komga
 data:
-  TZ: "Europe/Paris"
-  JAVA_TOOL_OPTIONS: "-Xmx4g"
+  TZ: "Europe/Paris" # <-- Add your own TZ
+  JAVA_TOOL_OPTIONS: "-Xmx4g" # <-- Adjust this if you want to allocate more or less memory to the Komga server.

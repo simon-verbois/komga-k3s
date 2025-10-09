@@ -1,101 +1,39 @@
 # Deploying Komga on K3s/Kubernetes
 
-This repository contains a set of Kubernetes manifests for deploying [Komga](https://komga.org/), a free and open source comics/mangas server, on a K3s cluster (tested on a single-node K3s) or any other Kubernetes cluster.
+This repository contains a set of Kubernetes manifests for deploying [Komga](https://komga.org/), a free and open source comics/mangas server.
 
-The configuration is designed to be simple, clean, and easily maintainable.
+The configuration is designed to separate application configuration, metadata, and the actual media files for better data management.
 
-## Features
-
-- Simple deployment via `kubectl apply`.
-- Data persistence for configuration and database managed by `PersistentVolumeClaim`s.
-- Direct access to your media library via a `hostPath` volume mount.
-- Centralized configuration in a `ConfigMap`.
-- Secure exposure via an `Ingress` (tested with Traefik).
+<br>
 
 ## Prerequisites
 
 1. A working Kubernetes cluster (e.g., K3s, k0s, RKE2).
 2. The `kubectl` command-line tool configured to access your cluster.
 3. An **Ingress Controller** installed in the cluster (e.g., Traefik, NGINX Ingress).
-4. A **StorageClass** configured to dynamically provision storage volumes. K3s includes `local-path-provisioner`, which works for this configuration.
+4. A **StorageClass** configured to dynamically provision storage volumes. 
 5. A directory on your Kubernetes node(s) containing your comics/mangas library that you can point the deployment to.
+
+<br>
 
 ## Installation
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/simon-verbois/komga-k3s
-cd komga-k3s
+git clone https://github.com/simon-verbois/komga-k8s
+cd komga-k8s
 ```
 
-### 2. Copy the files
-
-It's a good practice to use the provided files as templates. Make your own copy to edit with this command.
+### 2. Rename the files
 
 ```bash
 for file in *.yaml.template; do mv "$file" "${file%.template}"; done
 ```
 
-### 3. Customize the configuration
+### 3. Custom the configuration files
 
-You **must** adapt some files to your own environment before applying them.
-
-- **`02-configmap.yaml`**:
-    - Change the time zone `TZ` if needed (e.g., `"America/New_York"`).
-    - Adjust `JAVA_TOOL_OPTIONS` if you want to allocate more or less memory to the Komga server.
-
-    ```yaml
-    data:
-      TZ: "Europe/Paris" # <-- EDIT THIS
-      JAVA_TOOL_OPTIONS: "-Xmx4g" # <-- EDIT THIS (e.g., -Xmx2g for 2GB)
-    ```
-
-<br>
-
-- **`03-deployment.yaml`**:
-    - **User/Group Permissions**: Adjust `runAsUser`, `runAsGroup`, and `fsGroup` in `securityContext` to match the user/group ID that owns your media files on the host node. This is critical to avoid permission issues.
-    - **Media Library Path**: Change the `hostPath.path` for the `mangas` volume to the absolute path of your comics/mangas library on your Kubernetes node.
-
-    ```yaml
-    # ...
-    spec:
-      # ...
-      template:
-        # ...
-        spec:
-          securityContext:
-            runAsUser: 1003   # <-- EDIT THIS to your user's UID
-            runAsGroup: 1003  # <-- EDIT THIS to your user's GID
-            fsGroup: 1003     # <-- EDIT THIS to your user's GID
-          # ...
-          volumes:
-          - name: mangas
-            hostPath:
-              path: /data/md0/media/mangas # <-- EDIT THIS to your media library path
-              type: Directory
-          # ...
-    ```
-
-<br>
-
-- **`05-ingress.yaml`**:
-    - Modify the `host` to use your own domain name.
-    - Adapt the ingress `annotations` for your Ingress Controller. The example uses Traefik and assumes your TLS certificate resolver is named `ovhresolver`. Change this to match your setup.
-
-    ```yaml
-    metadata:
-      # ...
-      annotations:
-        traefik.ingress.kubernetes.io/router.tls.certresolver: your-certresolver-name # <-- EDIT THIS
-    spec:
-      rules:
-      - host: "komga.your-domain.com" # <-- EDIT THIS
-        # ...
-      tls:
-      - hosts:
-        - "komga.your-domain.com" # <-- EDIT THIS
-    ```
+You have to adapt the yaml file, follow the hint for each file
 
 ### 4. Deploy Komga
 
@@ -113,6 +51,8 @@ After a few moments, the container image will be downloaded and the pod will sta
 
 The initial setup, including creating an admin user and adding your libraries, will be done through this web interface.
 
+<br>
+
 ## Maintenance
 
 ### Updating the Komga Image
@@ -129,6 +69,8 @@ You can monitor the progress of the update with:
 kubectl rollout status deployment/komga-deployment -n komga
 ```
 
+<br>
+
 ## Uninstallation
 
 To remove all the resources created by these manifests, run the following command:
@@ -136,6 +78,10 @@ To remove all the resources created by these manifests, run the following comman
 ```bash
 kubectl delete -f .
 ```
+
+**Note:** This will also delete the `komga` namespace. The `PersistentVolumeClaim` will be deleted, but the actual data on your storage volume might remain, depending on your `StorageClass` reclaim policy.
+
+<br>
 
 ## License
 

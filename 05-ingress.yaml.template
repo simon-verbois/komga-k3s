@@ -5,10 +5,10 @@ metadata:
   name: komga-ingress
   namespace: komga
   annotations:
-    traefik.ingress.kubernetes.io/router.tls.certresolver: your-certresolver-name
+    traefik.ingress.kubernetes.io/router.tls.certresolver: your-certresolver-name # <-- Add your TLS resolver name
 spec:
   rules:
-  - host: "komga.your-domain.com"
+  - host: "komga.your-domain.com" # <-- Add you own domain
     http:
       paths:
       - path: /
@@ -20,4 +20,4 @@ spec:
               name: http
   tls:
   - hosts:
-    - "komga.your-domain.com"
+    - "komga.your-domain.com" # <-- Add you own domain
