@@ -1,4 +1,4 @@
-# Deploying Komga on K3s/Kubernetes
+# Deploying Komga on Kubernetes
 
 This repository contains a set of Kubernetes manifests for deploying [Komga](https://komga.org/), a free and open source comics/mangas server.
 
